@@ -19,7 +19,7 @@
     </div>
 
     <keep-alive>
-      <router-view/>
+      <router-view style="padding-bottom: 50px;"/>
     </keep-alive>
     <TabBar/>
   </div>

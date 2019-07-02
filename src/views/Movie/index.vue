@@ -20,8 +20,9 @@
         <router-view />
       </keep-alive>
     </div>
-
     <TabBar />
+    <!-- 命名路由 -->
+    <router-view name="detail" /> 
   </div>
 </template>
 
@@ -40,10 +41,11 @@ export default {
       this.axios.get("/api/getLocation").then(res => {
         var msg = res.data.msg;
         if (msg === "ok") {
-
           var nm = res.data.data.nm;
           var id = res.data.data.id;
-          if( this.$store.state.city.id == id ){return;}
+          if (this.$store.state.city.id == id) {
+            return;
+          }
           messageBox({
             title: "定位",
             content: nm,
@@ -51,10 +53,9 @@ export default {
             ok: "切换定位",
             handleOk() {
               //直接改本地存储
-              window.localStorage.setItem('nowNm',nm);
-              window.localStorage.setItem('nowId',id);
+              window.localStorage.setItem("nowNm", nm);
+              window.localStorage.setItem("nowId", id);
               window.location.reload();
-
             }
           });
         }

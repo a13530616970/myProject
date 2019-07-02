@@ -4,7 +4,7 @@
       <div class="search_input">
         <div class="search_input_wrapper">
           <i class="iconfont icon-sousuo"></i>
-          <input type="text" v-model="message">
+          <input type="text" v-model="message" />
         </div>
       </div>
       <div class="search_result">
@@ -12,7 +12,7 @@
         <ul>
           <li v-for="item in moviesList" :key="item.id">
             <div class="img">
-              <img :src="item.img | setWH('128.180')">
+              <img :src="item.img | setWH('128.180')" />
             </div>
             <div class="info">
               <p>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { clearTimeout, setTimeout } from 'timers';
+import { clearTimeout, setTimeout } from "timers";
 export default {
   name: "Search",
   data() {
@@ -40,34 +40,38 @@ export default {
       moviesList: []
     };
   },
-  methods:{
-    cancelRequest(){
-      if(typeof this.source==='function'){
-        this.source('终止请求')
+  methods: {
+    cancelRequest() {
+      if (typeof this.source === "function") {
+        this.source("终止请求");
       }
     }
   },
   watch: {
     message(newVal) {
       var that = this;
+      var cityId = this.$store.state.city.id;
       this.cancelRequest();
-      this.axios.get("/api/searchList?cityId=10&kw=" + newVal,{
-        cancelToken: new this.axios.CancelToken(function executor(c){
-          that.source=c;
+      this.axios
+        .get("/api/searchList?cityId=" + cityId + "&kw=" + newVal, {
+          cancelToken: new this.axios.CancelToken(function executor(c) {
+            that.source = c;
+          })
         })
-      }).then(res => {
-        var msg = res.data.msg;
-        var movies = res.data.data.movies;
-        if (msg && movies) {
-          this.moviesList = res.data.data.movies.list;
-        }
-      }).catch((err)=>{
-        if(this.axios.isCancel(err)){
-          console.log('Rquest canceled',err.message);
-        }else{
-          console.log(err)
-        }
-      });
+        .then(res => {
+          var msg = res.data.msg;
+          var movies = res.data.data.movies;
+          if (msg && movies) {
+            this.moviesList = res.data.data.movies.list;
+          }
+        })
+        .catch(err => {
+          if (this.axios.isCancel(err)) {
+            console.log("Rquest canceled", err.message);
+          } else {
+            console.log(err);
+          }
+        });
     }
   }
 };

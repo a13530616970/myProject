@@ -1,22 +1,30 @@
 <template>
   <div class="cinema_body">
-    <ul>
-      <li v-for="item in cinemas" :key="item.id">
-        <div>
-          <span>{{ item.nm }}</span>
-          <span class="q">
-            <span class="price">{{ item.sellPrice }}</span> 元起
-          </span>
-        </div>
-        <div class="address">
-          <span>{{ item.addr }}</span>
-          <span>{{ item.distance }}</span>
-        </div>
-        <div class="card">
-            <div v-for="(num,key) in item.tag" v-if="num===1" :key="key" :class="key | classCard(key)">{{key | formatCard(key)}}</div>
-        </div>
-      </li>
-    </ul>
+    <Loading v-if="isLoading" />
+    <Scroller v-else>
+      <ul>
+        <li v-for="item in cinemas" :key="item.id">
+          <div>
+            <span>{{ item.nm }}</span>
+            <span class="q">
+              <span class="price">{{ item.sellPrice }}</span> 元起
+            </span>
+          </div>
+          <div class="address">
+            <span>{{ item.addr }}</span>
+            <span>{{ item.distance }}</span>
+          </div>
+          <div class="card">
+            <div
+              v-for="(num,key) in item.tag"
+              v-if="num===1"
+              :key="key"
+              :class="key | classCard(key)"
+            >{{key | formatCard(key)}}</div>
+          </div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
@@ -25,45 +33,53 @@ export default {
   name: "CiList",
   data() {
     return {
-      cinemas: []
+      cinemas: [],
+      isLoading: true,
+      prevCityId: -1
     };
   },
-  mounted() {
-    this.axios.get("/api/cinemaList?cityId=10").then(res => {
+  activated() {
+    let cityId = this.$store.state.city.id;
+    //如果没有切换城市就返回不发送请求
+    if (this.prevCityId === cityId) return;
+    this.isLoading = true;
+    this.axios.get("/api/cinemaList?cityId=" + cityId).then(res => {
       var msg = res.data.msg;
       if (msg === "ok") {
         this.cinemas = res.data.data.cinemas;
+        this.isLoading = false;
+        this.prevCityId = cityId;
       }
     });
   },
-  filters :{
-    formatCard(key){
-        var card = [
-          {key : 'allowRefund' , value:'可改签'},
-          {key : 'endorse' , value:'可退'},
-          {key : 'sell' , value:'折扣卡'},
-          {key : 'snack' , value:'小吃'},
-        ];
-        for(var i =0;i<card.length;i++){
-          if(card[i].key === key){
-            return card[i].value
-          }
+  filters: {
+    formatCard(key) {
+      var card = [
+        { key: "allowRefund", value: "可改签" },
+        { key: "endorse", value: "可退" },
+        { key: "sell", value: "折扣卡" },
+        { key: "snack", value: "小吃" }
+      ];
+      for (var i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-        return ''
+      }
+      return "";
     },
-    classCard(key){
-        var card = [
-          {key : 'allowRefund' , value:'bl'},
-          {key : 'endorse' , value:'bl'},
-          {key : 'sell' , value:'or'},
-          {key : 'snack' , value:'or'},
-        ];
-        for(var i =0;i<card.length;i++){
-          if(card[i].key === key){
-            return card[i].value
-          }
+    classCard(key) {
+      var card = [
+        { key: "allowRefund", value: "bl" },
+        { key: "endorse", value: "bl" },
+        { key: "sell", value: "or" },
+        { key: "snack", value: "or" }
+      ];
+      for (var i = 0; i < card.length; i++) {
+        if (card[i].key === key) {
+          return card[i].value;
         }
-        return ''
+      }
+      return "";
     }
   }
 };

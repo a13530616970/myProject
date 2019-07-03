@@ -22,7 +22,7 @@
     </div>
     <TabBar />
     <!-- 命名路由 -->
-    <router-view name="detail" /> 
+    <router-view name="detail" />
   </div>
 </template>
 
@@ -47,8 +47,8 @@ export default {
             return;
           }
           messageBox({
-            title: "定位",
-            content: nm,
+            title: "你的位置",
+            content: "是否切换到" + nm + "?",
             cancel: "取消",
             ok: "切换定位",
             handleOk() {
